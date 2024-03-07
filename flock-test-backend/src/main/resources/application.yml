@@ -1,3 +1,3 @@
-#spring:
-#  autoconfigure:
-#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+# spring:
+#   websockets:
+#     buffer-size-limit: 1048576 # Increase the buffer size limit to 1MB

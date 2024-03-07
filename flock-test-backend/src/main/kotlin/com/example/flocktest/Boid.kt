@@ -1,6 +1,5 @@
 package com.example.flocktest
 
-import kotlinx.coroutines.*
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -26,7 +25,7 @@ class Boid(var position: Vector, var velocity: Vector) {
     }
 
     fun applyBehaviors(
-        boids: List<Boid>,
+        neighbours: List<Boid>,
         center: Vector,
         sepScale: Double, // = 10 * Math.random(),
         aliScale: Double, // = 10 * Math.random(),
@@ -36,13 +35,9 @@ class Boid(var position: Vector, var velocity: Vector) {
         separationViewRange: Double
     ) {
         val maxRange = max(max(alignmentViewRange, cohesionViewRange), separationViewRange)
-        val filteredBoids = boids.filter { boid -> boid.position.distance(this.position) < maxRange }
+        val filteredBoids = neighbours.filter { boid -> boid.position.distance(this.position) < maxRange }
 
         val sep = separate(filteredBoids, separationViewRange) // Separation
-        // val sep = runBlocking {
-        //     separateAsync(filteredBoids, separationViewRange) // Separation
-        // }
-
         val ali = align(filteredBoids, alignmentViewRange)    // Alignment
         val coh = cohesion(filteredBoids, cohesionViewRange) // Cohesion
 
@@ -71,40 +66,10 @@ class Boid(var position: Vector, var velocity: Vector) {
         // add a bit randomness
         // position.add (Vector(Math.random() * 0.1, Math.random() * 0.1))
 
-        position.wrap() // Ensure the position wraps around the boundary
-        acceleration.multiply(0.0) // Optionally reset acceleration after each update
+        // position.wrap() // Ensure the position wraps around the boundary
+        acceleration.multiply(0.5) // Optionally reset acceleration after each update
 
         // position = position.add(acceleration)
-    }
-
-    private suspend fun separateAsync(boids: List<Boid>, separationViewRange: Double): Vector = coroutineScope {
-        val steer = Vector(0.0, 0.0)
-        val contributions = mutableListOf<Deferred<Pair<Vector, Int>>>()
-
-        boids.forEach { other ->
-            contributions.add(async(Dispatchers.Default) {
-                val d = position.distance(other.position)
-                if (d > 0 && d < separationViewRange) {
-                    val diff = position.copy().subtract(other.position).normalize().divide(d)
-                    Pair(diff, 1)
-                } else {
-                    Pair(Vector(0.0, 0.0), 0)
-                }
-            })
-        }
-
-        val results = contributions.awaitAll()
-        val count = results.sumOf { it.second }
-
-        results.forEach { (contribution, _) ->
-            steer.add(contribution)
-        }
-
-        if (count > 0) {
-            steer.divide(count.toDouble())
-        }
-
-        return@coroutineScope steer.limit(MAX_FORCE)
     }
 
     // Separation: Steer to avoid crowding local flockmates
