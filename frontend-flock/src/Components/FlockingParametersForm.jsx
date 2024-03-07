@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import SliderInput from './SliderInput';
 
 const FlockingParametersForm = () => {
     const [parameters, setParameters] = useState({
@@ -29,7 +30,7 @@ const FlockingParametersForm = () => {
         }
     };
 
-        const handleResetSubmit = async (e) => {
+    const handleResetSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:8080/api/parameters/reset');
@@ -42,92 +43,48 @@ const FlockingParametersForm = () => {
 
     return (
         <>
-          <form onSubmit={handleSubmit}>
-              {/* Example for one slider; replicate for others */}
-              <label>
-                  Cohesion Range:
-                  <input
-                      type="range"
-                      name="cohesionRange"
-                      min="0"
-                      max="10"
-                      value={parameters.cohesionRange}
-                      onChange={handleInputChange}
-                      style={{ display: 'block', width: '50%' }}
-                  />
-                  {parameters.cohesionRange}
-              </label>
-              <label>
-                  Alignment Range:
-                  <input
-                      type="range"
-                      name="alignmentRange"
-                      min="0"
-                      max="10"
-                      value={parameters.alignmentRange}
-                      onChange={handleInputChange}
-                      style={{ display: 'block', width: '50%' }}
-                  />
-                  {parameters.alignmentRange}
-              </label>
-              <label>
-                  Separation Range:
-                  <input
-                      type="range"
-                      name="separationRange"
-                      min="0"
-                      max="10"
-                      value={parameters.separationRange}
-                      onChange={handleInputChange}
-                      style={{ display: 'block', width: '50%' }}
-                  />
-                  {parameters.separationRange}
-              </label>
-              <label>
-                  Cohesion Scale:
-                  <input
-                      type="range"
-                      name="cohesionScale"
-                      min="0"
-                      max="10"
-                      value={parameters.cohesionScale}
-                      onChange={handleInputChange}
-                      style={{ display: 'block', width: '50%' }}
-                  />
-                  {parameters.cohesionScale}
-              </label>
-              <label>
-                  Alignment Scale:
-                  <input
-                      type="range"
-                      name="alignmentScale"
-                      min="0"
-                      max="10"
-                      value={parameters.alignmentScale}
-                      onChange={handleInputChange}
-                      style={{ display: 'block', width: '50%' }}
-                  />
-                  {parameters.alignmentScale}
-              </label>
-              <label>
-                  Separation Scale:
-                  <input
-                      type="range"
-                      name="separationScale"
-                      min="0"
-                      max="10"
-                      value={parameters.separationScale}
-                      onChange={handleInputChange}
-                      style={{ display: 'block', width: '50%' }}
-                  />
-                  {parameters.separationScale}
-              </label>
-              {/* Add other sliders for separationRange, alignmentRange, etc. */}
-              <button type="submit">Update Parameters</button>
-          </form>
-          <form onSubmit={handleResetSubmit}>
-              <button type="submit">Reset</button>
-          </form>
+            <form onSubmit={handleSubmit}>
+                <SliderInput
+                    label="Cohesion Range"
+                    name="cohesionRange"
+                    value={parameters.cohesionRange}
+                    onChange={handleInputChange}
+                />
+                <SliderInput
+                    label="Alignment Range"
+                    name="alignmentRange"
+                    value={parameters.alignmentRange}
+                    onChange={handleInputChange}
+                />
+                <SliderInput
+                    label="Separation Range"
+                    name="separationRange"
+                    value={parameters.separationRange}
+                    onChange={handleInputChange}
+                />
+                <SliderInput
+                    label="Cohesion Scale"
+                    name="cohesionScale"
+                    value={parameters.cohesionScale}
+                    onChange={handleInputChange}
+                />
+                <SliderInput
+                    label="Alignment Scale"
+                    name="alignmentScale"
+                    value={parameters.alignmentScale}
+                    onChange={handleInputChange}
+                />
+                <SliderInput
+                    label="Separation Scale"
+                    name="separationScale"
+                    value={parameters.separationScale}
+                    onChange={handleInputChange}
+                />
+                <button type="submit">Update Parameters</button>
+            </form>
+            <form onSubmit={handleResetSubmit}>
+                <button type="submit">Reset</button>
+            </form>
         </>
     );
 };
