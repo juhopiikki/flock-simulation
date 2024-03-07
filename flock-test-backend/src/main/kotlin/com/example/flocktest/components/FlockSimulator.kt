@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.system.measureTimeMillis
 
@@ -24,9 +25,9 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
     var aliRange: Double = 8.0 // 10 * Math.random()
     var cohRange: Double = 3.0 // 10 * Math.random()
 
-    private val spatialGrid = SpatialGrid(cellSize = 10.0, width = 100.0, height = 100.0)
+    private val spatialGrid = SpatialGrid(cellSize = 5.0, width = 100.0, height = 100.0)
 
-    @Scheduled(fixedRate = 40)
+    @Scheduled(fixedRate = 50)
     fun broadcastFlockPositions() {
         spatialGrid.clear()
         flock.forEach { spatialGrid.addBoid(it) }
@@ -46,7 +47,12 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
             acc.add(boid.position)
         }.divide(flock.size.toDouble())
         val payload = mapOf(
-                "boids" to flock.map { mapOf("x" to it.position.x.roundToLong(), "y" to it.position.y.roundToLong()) },
+                "boids" to flock.map {
+                    mapOf(
+                        "x" to (it.position.x * 10).roundToInt() / 10.0, //.roundToLong(),
+                        "y" to (it.position.y * 10).roundToInt() / 10.0, //.roundToLong(),
+                    )
+                 },
                 "averagePosition" to mapOf("x" to avgPosition2.x, "y" to avgPosition2.y)
         )
 
