@@ -1,9 +1,8 @@
 package com.example.flocktest
 
+import kotlinx.coroutines.*
 import kotlin.math.abs
-import kotlin.math.cos
 import kotlin.math.max
-import kotlin.math.sin
 
 class Boid(var position: Vector, var velocity: Vector) {
     var acceleration = Vector(0.0, 0.0)
@@ -37,11 +36,17 @@ class Boid(var position: Vector, var velocity: Vector) {
         separationViewRange: Double
     ) {
         val maxRange = max(max(alignmentViewRange, cohesionViewRange), separationViewRange)
-        val filteredBoids = boids.filter { boid -> boid.position.distance(this.position) < maxRange}
+        val filteredBoids = boids.filter { boid -> boid.position.distance(this.position) < maxRange }
+
         val sep = separate(filteredBoids, separationViewRange) // Separation
+        // val sep = runBlocking {
+        //     separateAsync(filteredBoids, separationViewRange) // Separation
+        // }
+
         val ali = align(filteredBoids, alignmentViewRange)    // Alignment
         val coh = cohesion(filteredBoids, cohesionViewRange) // Cohesion
-        val flockCenterForce = flockCcenter(center)
+
+        val flockCenterForce = flockCenter(center)
         val centerForce = center()
 
         // Arbitrarily weight these forces
@@ -49,9 +54,6 @@ class Boid(var position: Vector, var velocity: Vector) {
         // ali.multiply(1.5) // Adjust these weights as needed
         // coh.multiply(1.0)
 
-        // println("sepScale: $sepScale")
-        // println("aliScale: $aliScale")
-        // println("cohScale: $cohScale")
         // random weights
         sep.multiply(sepScale)
         ali.multiply(aliScale) // Adjust these weights as needed
@@ -75,6 +77,36 @@ class Boid(var position: Vector, var velocity: Vector) {
         // position = position.add(acceleration)
     }
 
+    private suspend fun separateAsync(boids: List<Boid>, separationViewRange: Double): Vector = coroutineScope {
+        val steer = Vector(0.0, 0.0)
+        val contributions = mutableListOf<Deferred<Pair<Vector, Int>>>()
+
+        boids.forEach { other ->
+            contributions.add(async(Dispatchers.Default) {
+                val d = position.distance(other.position)
+                if (d > 0 && d < separationViewRange) {
+                    val diff = position.copy().subtract(other.position).normalize().divide(d)
+                    Pair(diff, 1)
+                } else {
+                    Pair(Vector(0.0, 0.0), 0)
+                }
+            })
+        }
+
+        val results = contributions.awaitAll()
+        val count = results.sumOf { it.second }
+
+        results.forEach { (contribution, _) ->
+            steer.add(contribution)
+        }
+
+        if (count > 0) {
+            steer.divide(count.toDouble())
+        }
+
+        return@coroutineScope steer.limit(MAX_FORCE)
+    }
+
     // Separation: Steer to avoid crowding local flockmates
     private fun separate(boids: List<Boid>, separationViewRange: Double): Vector {
         val desiredSeparation = separationViewRange
@@ -96,12 +128,11 @@ class Boid(var position: Vector, var velocity: Vector) {
 
     // Alignment: Steer towards the average heading of local flockmates
     private fun align(boids: List<Boid>, alignmentViewRange: Double): Vector {
-        val neighbordist = alignmentViewRange
         val sum = Vector(0.0, 0.0)
         var count = 0
         boids.forEach { other ->
             val d = position.distance(other.position) // Vector.distance(position, other.position)
-            if (d > 0 && d < neighbordist) {
+            if (d > 0 && d < alignmentViewRange) {
                 sum.add(other.velocity)
                 count++
             }
@@ -132,7 +163,7 @@ class Boid(var position: Vector, var velocity: Vector) {
         }
     }
 
-    private fun flockCcenter(center: Vector): Vector {
+    private fun flockCenter(center: Vector): Vector {
         val distanceToCenter = Vector(this.position.x - center.x, this.position.y - center.y)
         val distanceSquaredOpposite = Vector(-distanceToCenter.x * abs(distanceToCenter.x),
                 -distanceToCenter.y * abs(distanceToCenter.y))
@@ -144,87 +175,5 @@ class Boid(var position: Vector, var velocity: Vector) {
                 -this.position.y * abs(this.position.y))
         return distanceSquaredOpposite
     }
-
-    /*
-    companion object {
-        const val VIEW_RANGE = 100.0 // How far the boid can see (for cohesion and alignment)
-        const val MIN_DISTANCE = 10.0 // Minimum distance from other boids (for separation)
-        const val MAX_SPEED = 0.8
-    }
-
-    fun update(boids: List<Boid>) {
-        val separation = separate(boids)//.scale(1.5) // Adjust weighting as necessary
-        val alignment = align(boids)//.scale(1.0)
-        val cohesion = cohesion(boids)//.scale(1.0)
-
-        velocity = velocity.add(separation).add(alignment.divide(2.0)).add(cohesion.divide(1.5))
-        velocity = velocity.limit(MAX_SPEED)
-        position = position.add(velocity)
-    }
-
-    private fun separate(boids: List<Boid>): Vector {
-        val desiredSeparation = MIN_DISTANCE
-        val steer = Vector(0.0, 0.0)
-        var count = 0
-        for (other in boids) {
-            val distance = position.distance(other.position)
-            if (distance > 0 && distance < desiredSeparation) {
-                var diff = position.subtract(other.position).normalize().divide(distance)
-                steer.add(diff)
-                count++
-            }
-        }
-        if (count > 0) {
-            steer.divide(count.toDouble())
-        }
-        return steer
-    }
-
-    private fun align(boids: List<Boid>): Vector {
-        val neighbordist = VIEW_RANGE
-        val sum = Vector(0.0, 0.0)
-        var count = 0
-        for (other in boids) {
-            val distance = position.distance(other.position)
-            if (distance > 0 && distance < neighbordist) {
-                sum.add(other.velocity)
-                count++
-            }
-        }
-        if (count > 0) {
-            sum.divide(count.toDouble()).normalize().multiply(MAX_SPEED)
-            val steer = sum.subtract(velocity).limit(MAX_SPEED)
-            return steer
-        } else {
-            return Vector(0.0, 0.0)
-        }
-    }
-
-    private fun cohesion(boids: List<Boid>): Vector {
-        val neighbordist = VIEW_RANGE
-        val sum = Vector(0.0, 0.0) // Start with empty vector to accumulate all positions
-        var count = 0
-        for (other in boids) {
-            val distance = position.distance(other.position)
-            if (distance > 0 && distance < neighbordist) {
-                sum.add(other.position) // Add location
-                count++
-            }
-        }
-        if (count > 0) {
-            sum.divide(count.toDouble()) // Divide to get the average position
-            return seek(sum) // Steer towards the position
-        } else {
-            return Vector(0.0, 0.0)
-        }
-    }
-
-    private fun seek(target: Vector): Vector {
-        val desired = target.subtract(position) // A vector pointing from the position to the target
-        desired.normalize().multiply(MAX_SPEED)
-        // Steering = Desired minus velocity
-        val steer = desired.subtract(velocity).limit(MAX_SPEED)
-        return steer
-    }*/
 }
 
