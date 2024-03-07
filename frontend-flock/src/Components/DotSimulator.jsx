@@ -1,29 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import FlockingParametersForm from './FlockingParametersForm';
 
 const DotSimulator = () => {
-  const [positions, setPositions] = useState([]);
-  const [avgPosition, setAvgPositions] = useState({});
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    // Define `stompClient` in a scope accessible by the cleanup function
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
       console.log('Connected to the WebSocket server');
       stompClient.subscribe('/topic/position', (message) => {
-        const newPositions = JSON.parse(message.body);
-        // console.log(`got new positions`)
-        setPositions(newPositions.boids);
-        setAvgPositions(newPositions.averagePosition);
-        // setPositions(newPosition.y);
-      });
+        const { boids, averagePosition } = JSON.parse(message.body);
+        if (canvasRef.current) {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext('2d');
+          const scalingFactor = 1.5;
+          const offsetX = 100;
+          const offsetY = 400;
+          // Clear the canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Trigger the simulation to start sending positions
-      stompClient.send("/app/moveDot", {}, JSON.stringify({}));
+          // Draw each boid
+          // ctx.globalAlpha = 0.4;
+          boids.forEach((position) => {
+            ctx.beginPath();
+            ctx.arc(400 + (position.x + offsetX) * scalingFactor, (position.y + offsetY) * scalingFactor, 2.1, 1, 2 * Math.PI);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+          });
+
+          // Draw average position
+          ctx.globalAlpha = 1.0;
+          ctx.beginPath();
+          ctx.arc(400 + (averagePosition.x + offsetX) * scalingFactor, (averagePosition.y + offsetY) * scalingFactor, 1.5, 0, 2 * Math.PI);
+          ctx.fillStyle = 'red';
+          ctx.fill();
+        }
+      });
     });
 
     // Cleanup function
@@ -34,46 +50,18 @@ const DotSimulator = () => {
         });
       }
     };
-    setPositionX(90)
-    setPositionY(0)*/
+*/
   }, []); // The empty dependency array ensures this effect runs only once on mount
 
   return (
-    // <div style={{ position: 'relative', width: '200px', height: '200px', border: '1px solid black' }}>
     <>
-      <FlockingParametersForm/>
-      <div style={{ position: 'relative', width: '200px', height: '200px' }}>
-
-        {positions.map((position, index) => (
-          <div
-            key={index}
-            style={{
-              position: 'absolute',
-              left: `${400+position.x}%`,
-              top: `${position.y}%`,
-              width: '4px',
-              height: '4px',
-              borderRadius: '50%',
-              backgroundColor: 'black', // Feel free to change the color
-              transform: 'translate(-50%, -50%)', // Centers the dot
-              opacity: '0.4'
-            }}
-          ></div>
-        ))}
-
-        <div
-            style={{
-              position: 'absolute',
-              left: `${400+avgPosition.x}%`,
-              top: `${avgPosition.y}%`,
-              width: '5px',
-              height: '5px',
-              borderRadius: '50%',
-              backgroundColor: 'red', // Feel free to change the color
-              transform: 'translate(-50%, -50%)', // Centers the dot
-            }}
-          ></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <FlockingParametersForm />
+        </div>
+        <canvas ref={canvasRef} width="1000" height="1000" style={{ border: '1px solid black' }}></canvas>
       </div>
+
     </>
   );
 };
