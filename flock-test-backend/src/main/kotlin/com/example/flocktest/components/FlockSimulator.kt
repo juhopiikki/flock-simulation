@@ -2,10 +2,7 @@ package com.example.flocktest.components
 
 import com.example.flocktest.Boid
 import com.example.flocktest.Vector
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -26,7 +23,7 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
     var aliRange: Double = 8.0 // 10 * Math.random()
     var cohRange: Double = 3.0 // 10 * Math.random()
 
-    @Scheduled(fixedRate = 50)
+    @Scheduled(fixedRate = 40)
     fun broadcastFlockPositions() {
         // val positions = flock.map { mapOf("x" to it.position.x, "y" to it.position.y) }
         val avgPosition = flock.fold(Vector(0.0, 0.0)) { acc, boid ->
@@ -56,7 +53,7 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
 
     suspend fun calculateUpdatesAsync(boids: List<Boid>, avgPosition: Vector) = coroutineScope {
         boids.map {
-            launch {
+            launch(Dispatchers.Default) {
                 it.applyBehaviors(boids, avgPosition, sepScale, aliScale, cohScale, aliRange, cohRange, sepRange)
             }
         }
@@ -65,5 +62,4 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
     fun reset() {
         flock.forEach { it.position = Vector.random() }
     }
-
 }
