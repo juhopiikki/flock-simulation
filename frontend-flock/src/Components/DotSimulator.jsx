@@ -24,9 +24,10 @@ const DotSimulator = () => {
         if (canvasRef.current) {
           const canvas = canvasRef.current;
           const ctx = canvas.getContext('2d');
-          const scalingFactor = 1.5;
-          const offsetX = 400;
-          const offsetY = 400;
+          const scalingFactor = 1.8;
+          const offsetX = 850;
+          const offsetY = 500;
+          const boidSize = 2.1
           // Clear the canvas
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -34,7 +35,7 @@ const DotSimulator = () => {
           // ctx.globalAlpha = 0.4;
           boids.forEach((position) => {
             ctx.beginPath();
-            ctx.arc((position.x + offsetX) * scalingFactor, (position.y + offsetY) * scalingFactor, 2.1, 1, 2 * Math.PI);
+            ctx.arc(offsetX + position.x * scalingFactor, offsetY + position.y * scalingFactor, boidSize, 0, 2 * Math.PI);
             ctx.fillStyle = 'black';
             ctx.fill();
           });
@@ -42,7 +43,7 @@ const DotSimulator = () => {
           // Draw average position
           ctx.globalAlpha = 1.0;
           ctx.beginPath();
-          ctx.arc((averagePosition.x + offsetX) * scalingFactor, (averagePosition.y + offsetY) * scalingFactor, 2.1, 0, 2 * Math.PI);
+          ctx.arc(offsetX + averagePosition.x * scalingFactor, offsetY + averagePosition.y * scalingFactor, boidSize, 0, 2 * Math.PI);
           ctx.fillStyle = 'red';
           ctx.fill();
         }
@@ -64,11 +65,10 @@ const DotSimulator = () => {
     <div style={{ position: 'relative' }}>
       <canvas 
         ref={canvasRef}
-        width="1500"
+        width="1700"
         height="1000"
         style={{ 
-          border: '1px solid black', 
-          width: '100%', 
+          width: '100%',
           height: 'auto' 
         }}>
       </canvas>
@@ -78,7 +78,7 @@ const DotSimulator = () => {
           position: 'absolute',
           top: 60,
           left: 10,
-          backgroundColor: 'rgba(245, 245, 245, 0.5)', // Semi-transparent background
+          backgroundColor: 'rgba(245, 245, 245, 0.5)',
           padding: '10px',
           zIndex: 2, // Ensure the form appears above the canvas
         }}>
@@ -95,15 +95,6 @@ const DotSimulator = () => {
         <FontAwesomeIcon icon={faCog} />
       </button>
     </div>
-/*
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <FlockingParametersForm />
-        </div>
-        <canvas ref={canvasRef} width="1500" height="1000" style={{ border: '1px solid black' }}></canvas>
-      </div>
-    </>*/
   );
 };
 
