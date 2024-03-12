@@ -18,7 +18,7 @@ const DotSimulator = () => {
           const canvas = canvasRef.current;
           const ctx = canvas.getContext('2d');
           const scalingFactor = 1.5;
-          const offsetX = 100;
+          const offsetX = 400;
           const offsetY = 400;
           // Clear the canvas
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,7 +27,7 @@ const DotSimulator = () => {
           // ctx.globalAlpha = 0.4;
           boids.forEach((position) => {
             ctx.beginPath();
-            ctx.arc(400 + (position.x + offsetX) * scalingFactor, (position.y + offsetY) * scalingFactor, 2.1, 1, 2 * Math.PI);
+            ctx.arc((position.x + offsetX) * scalingFactor, (position.y + offsetY) * scalingFactor, 2.1, 1, 2 * Math.PI);
             ctx.fillStyle = 'black';
             ctx.fill();
           });
@@ -35,7 +35,7 @@ const DotSimulator = () => {
           // Draw average position
           ctx.globalAlpha = 1.0;
           ctx.beginPath();
-          ctx.arc(400 + (averagePosition.x + offsetX) * scalingFactor, (averagePosition.y + offsetY) * scalingFactor, 1.5, 0, 2 * Math.PI);
+          ctx.arc((averagePosition.x + offsetX) * scalingFactor, (averagePosition.y + offsetY) * scalingFactor, 1.5, 0, 2 * Math.PI);
           ctx.fillStyle = 'red';
           ctx.fill();
         }
@@ -59,7 +59,7 @@ const DotSimulator = () => {
         <div>
           <FlockingParametersForm />
         </div>
-        <canvas ref={canvasRef} width="1000" height="1000" style={{ border: '1px solid black' }}></canvas>
+        <canvas ref={canvasRef} width="1500" height="1000" style={{ border: '1px solid black' }}></canvas>
       </div>
 
     </>

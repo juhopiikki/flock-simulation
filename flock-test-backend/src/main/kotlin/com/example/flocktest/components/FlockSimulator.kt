@@ -16,7 +16,7 @@ import kotlin.system.measureTimeMillis
 @Component
 @EnableScheduling
 class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemplate) {
-    private val amount = 4000
+    private val amount = 1000
     private val flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector.random()) }
     var sepScale: Double = 2.5 // 10 * Math.random()
     var aliScale: Double = 1.5 // 10 * Math.random()

@@ -21,6 +21,10 @@ const FlockingParametersForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setParameters({
+            ...parameters,
+            [e.target.name]: parseFloat(e.target.value),
+        });
         try {
             const response = await axios.post('http://localhost:8080/api/parameters/update', parameters);
             //alert(response.data);
@@ -48,39 +52,38 @@ const FlockingParametersForm = () => {
                     label="Cohesion Range"
                     name="cohesionRange"
                     value={parameters.cohesionRange}
-                    onChange={handleInputChange}
+                    onChange={handleSubmit}
                 />
                 <SliderInput
                     label="Alignment Range"
                     name="alignmentRange"
                     value={parameters.alignmentRange}
-                    onChange={handleInputChange}
+                    onChange={handleSubmit}
                 />
                 <SliderInput
                     label="Separation Range"
                     name="separationRange"
                     value={parameters.separationRange}
-                    onChange={handleInputChange}
+                    onChange={handleSubmit}
                 />
                 <SliderInput
                     label="Cohesion Scale"
                     name="cohesionScale"
                     value={parameters.cohesionScale}
-                    onChange={handleInputChange}
+                    onChange={handleSubmit}
                 />
                 <SliderInput
                     label="Alignment Scale"
                     name="alignmentScale"
                     value={parameters.alignmentScale}
-                    onChange={handleInputChange}
+                    onChange={handleSubmit}
                 />
                 <SliderInput
                     label="Separation Scale"
                     name="separationScale"
                     value={parameters.separationScale}
-                    onChange={handleInputChange}
+                    onChange={handleSubmit}
                 />
-                <button type="submit">Update Parameters</button>
             </form>
             <form onSubmit={handleResetSubmit}>
                 <button type="submit">Reset</button>
