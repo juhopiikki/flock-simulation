@@ -18,12 +18,14 @@ import kotlin.system.measureTimeMillis
 class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemplate) {
     private val amount = 1000
     private val flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector(0.0,0.0)) }
-    var sepScale: Double = 2.5 // 10 * Math.random()
-    var aliScale: Double = 1.5 // 10 * Math.random()
+
+    var cohRange: Double = 8.0 // 10 * Math.random()
+    var aliRange: Double = 6.0 // 10 * Math.random()
+    var sepRange: Double = 3.0 // 10 * Math.random()
+
     var cohScale: Double = 1.0 // 10 * Math.random()
-    var sepRange: Double = 5.0 // 10 * Math.random()
-    var aliRange: Double = 8.0 // 10 * Math.random()
-    var cohRange: Double = 3.0 // 10 * Math.random()
+    var aliScale: Double = 1.0 // 10 * Math.random()
+    var sepScale: Double = 2.5 // 10 * Math.random()
 
     private val spatialGrid = SpatialGrid(cellSize = 5.0, width = 100.0, height = 100.0)
 

@@ -4,12 +4,12 @@ import SliderInput from './SliderInput';
 
 const FlockingParametersForm = () => {
     const [parameters, setParameters] = useState({
-        cohesionRange: 1.0,
-        separationRange: 5.0,
-        alignmentRange: 8.0,
+        cohesionRange: 8.0,
+        alignmentRange: 6.0,
+        separationRange: 3.0,
         cohesionScale: 1.0,
+        alignmentScale: 1.0,
         separationScale: 2.5,
-        alignmentScale: 1.5,
     });
 
     const handleInputChange = (e) => {

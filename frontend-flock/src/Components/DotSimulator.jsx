@@ -77,12 +77,17 @@ const DotSimulator = () => {
         if (canvasRef.current) {
           const canvas = canvasRef.current;
           const ctx = canvas.getContext('2d');
+
+          // Set the background to black
+          // ctx.fillStyle = 'black';
+          // ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // Clear the canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
           const scalingFactor = 1.8;
           const offsetX = 850;
           const offsetY = 500;
           const boidSize = 2.1
-          // Clear the canvas
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           ctx.globalAlpha = 0.8;
           // Draw each boid as an arrow

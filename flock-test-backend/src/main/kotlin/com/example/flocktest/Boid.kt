@@ -16,7 +16,7 @@ class Boid(var position: Vector, var velocity: Vector) {
         // const val VIEW_RANGE_COH = 3.0
         // const val VIEW_RANGE_SEPARATION = 5.0
         const val MAX_SPEED = 2.0
-        const val MAX_FORCE = 0.3
+        const val MAX_FORCE = 0.2
         // const val VIEW_RANGE_ALIGN = 10.0
         // const val VIEW_RANGE_COH = 5.0
         // const val VIEW_RANGE_SEPARATION = 10.0
@@ -37,9 +37,9 @@ class Boid(var position: Vector, var velocity: Vector) {
         val maxRange = max(max(alignmentViewRange, cohesionViewRange), separationViewRange)
         val filteredBoids = neighbours.filter { boid -> boid.position.distance(this.position) < maxRange }
 
-        val sep = separate(filteredBoids, separationViewRange) // Separation
-        val ali = align(filteredBoids, alignmentViewRange)    // Alignment
-        val coh = cohesion(filteredBoids, cohesionViewRange) // Cohesion
+        val sep = separate(filteredBoids, separationViewRange).limit(MAX_FORCE) // Separation
+        val ali = align(filteredBoids, alignmentViewRange).limit(MAX_FORCE)    // Alignment
+        val coh = cohesion(filteredBoids, cohesionViewRange).limit(MAX_FORCE) // Cohesion
 
         val flockCenterForce = flockCenter(center)
         val centerForce = center()
@@ -59,6 +59,7 @@ class Boid(var position: Vector, var velocity: Vector) {
         // Add the force vectors to acceleration
         acceleration.add(sep).add(ali).add(coh).add(flockCenterForce).add(centerForce)
 
+        // acceleration.limit(MAX_FORCE)
         velocity.add(acceleration)
         velocity.limit(MAX_SPEED)
         position.add(velocity)
@@ -88,7 +89,7 @@ class Boid(var position: Vector, var velocity: Vector) {
         if (count > 0) {
             steer.divide(count.toDouble())
         }
-        return steer.limit(MAX_FORCE)
+        return steer
     }
 
     // Alignment: Steer towards the average heading of local flockmates
@@ -103,7 +104,7 @@ class Boid(var position: Vector, var velocity: Vector) {
             }
         }
         return if (count > 0) {
-            sum.divide(count.toDouble()).normalize().multiply(MAX_SPEED).subtract(velocity).limit(MAX_FORCE)
+            sum.divide(count.toDouble()).normalize().multiply(MAX_SPEED).subtract(velocity)
         } else {
             Vector(0.0, 0.0)
         }
@@ -122,7 +123,7 @@ class Boid(var position: Vector, var velocity: Vector) {
             }
         }
         return if (count > 0) {
-            sum.divide(count.toDouble()).subtract(position).limit(MAX_FORCE)
+            sum.divide(count.toDouble()).subtract(position)
         } else {
             Vector(0.0, 0.0)
         }
