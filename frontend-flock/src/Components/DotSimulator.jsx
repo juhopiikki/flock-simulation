@@ -13,9 +13,27 @@ const DotSimulator = () => {
     setShowParameters(!showParameters);
   };
 
+  const calculateColorBasedOnSpeed = (velocityX, velocityY, minSpeed, maxSpeed) => {
+    const speed = Math.sqrt(velocityX ** 2 + velocityY ** 2);
+    const normalizedSpeed = (speed - minSpeed) / (maxSpeed - minSpeed);
+    
+    // Ensure the value is between 0 and 1
+    const clampedSpeed = Math.max(0, Math.min(1, normalizedSpeed));
+    
+    // Interpolate between green (slow) and red (fast)
+    const r = clampedSpeed * 255;
+    const g = (1 - clampedSpeed) * 255;
+    const b = 50;
+    
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${b})`;
+  };
+
   const drawBoidAsArrow = (ctx, boid, scalingFactor, offsetX, offsetY) => {
     const headLength = 9; // Length from base to tip of the arrowhead
     const headWidth = 6; // Width of the arrowhead base
+
+    const minSpeed = 1.0
+    const maxSpeed = 2.0
   
     // Calculate the angle of the boid's velocity
     const angle = Math.atan2(boid.vy, boid.vx);
@@ -35,13 +53,16 @@ const DotSimulator = () => {
     const baseRightX = baseX + Math.cos(angle + Math.PI / 2) * (headWidth / 2);
     const baseRightY = baseY + Math.sin(angle + Math.PI / 2) * (headWidth / 2);
 
+    // Determine the color based on speed
+    const color = calculateColorBasedOnSpeed(boid.vx, boid.vy, minSpeed, maxSpeed);
+
     // Draw the arrowhead
     ctx.beginPath();
     ctx.moveTo(tipX, tipY); // Start at the tip
     ctx.lineTo(baseLeftX, baseLeftY); // Draw to one base point
     ctx.lineTo(baseRightX, baseRightY); // Draw to the other base point
     ctx.closePath(); // Close the path to form a triangle
-    ctx.fillStyle = 'green';
+    ctx.fillStyle = color;
     ctx.fill();
   };
 
