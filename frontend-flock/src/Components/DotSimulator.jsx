@@ -1,10 +1,17 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import FlockingParametersForm from './FlockingParametersForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 
 const DotSimulator = () => {
+  const [showParameters, setShowParameters] = useState(true);
   const canvasRef = useRef(null);
+
+  const toggleParameters = () => {
+    setShowParameters(!showParameters);
+  };
 
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/ws');
@@ -35,7 +42,7 @@ const DotSimulator = () => {
           // Draw average position
           ctx.globalAlpha = 1.0;
           ctx.beginPath();
-          ctx.arc((averagePosition.x + offsetX) * scalingFactor, (averagePosition.y + offsetY) * scalingFactor, 1.5, 0, 2 * Math.PI);
+          ctx.arc((averagePosition.x + offsetX) * scalingFactor, (averagePosition.y + offsetY) * scalingFactor, 2.1, 0, 2 * Math.PI);
           ctx.fillStyle = 'red';
           ctx.fill();
         }
@@ -54,6 +61,41 @@ const DotSimulator = () => {
   }, []); // The empty dependency array ensures this effect runs only once on mount
 
   return (
+    <div style={{ position: 'relative' }}>
+      <canvas 
+        ref={canvasRef}
+        width="1500"
+        height="1000"
+        style={{ 
+          border: '1px solid black', 
+          width: '100%', 
+          height: 'auto' 
+        }}>
+      </canvas>
+
+      {showParameters && (
+        <div style={{
+          position: 'absolute',
+          top: 60,
+          left: 10,
+          backgroundColor: 'rgba(245, 245, 245, 0.5)', // Semi-transparent background
+          padding: '10px',
+          zIndex: 2, // Ensure the form appears above the canvas
+        }}>
+          <FlockingParametersForm />
+        </div>
+      )}
+
+      <button onClick={toggleParameters} style={{
+        position: 'absolute',
+        top: '10px',
+        left: '10px',
+        zIndex: 3, // Ensure the button is always clickable and visible
+      }}>
+        <FontAwesomeIcon icon={faCog} />
+      </button>
+    </div>
+/*
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
@@ -61,8 +103,7 @@ const DotSimulator = () => {
         </div>
         <canvas ref={canvasRef} width="1500" height="1000" style={{ border: '1px solid black' }}></canvas>
       </div>
-
-    </>
+    </>*/
   );
 };
 

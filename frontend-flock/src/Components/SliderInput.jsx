@@ -12,7 +12,7 @@ const SliderInput = ({ label, name, value, onChange, min = "0", max = "10", step
         value={value}
         onChange={onChange}
         step={step}
-        style={{ display: 'block', width: '50%' }}
+        style={{ display: 'block', width: '100%' }}
       />
     </label>
   );
