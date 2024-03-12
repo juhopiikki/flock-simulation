@@ -17,7 +17,7 @@ import kotlin.system.measureTimeMillis
 @EnableScheduling
 class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemplate) {
     private val amount = 1000
-    private val flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector.random()) }
+    private val flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector(0.0,0.0)) }
     var sepScale: Double = 2.5 // 10 * Math.random()
     var aliScale: Double = 1.5 // 10 * Math.random()
     var cohScale: Double = 1.0 // 10 * Math.random()
@@ -49,8 +49,10 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
         val payload = mapOf(
                 "boids" to flock.map {
                     mapOf(
-                        "x" to (it.position.x * 10).roundToInt() / 10.0, //.roundToLong(),
-                        "y" to (it.position.y * 10).roundToInt() / 10.0, //.roundToLong(),
+                        "x" to (it.position.x * 10).roundToInt() / 10.0,
+                        "y" to (it.position.y * 10).roundToInt() / 10.0,
+                        "vx" to (it.velocity.x * 10).roundToInt() / 10.0,
+                        "vy" to (it.velocity.y * 10).roundToInt() / 10.0,
                     )
                  },
                 "averagePosition" to mapOf("x" to avgPosition2.x, "y" to avgPosition2.y)

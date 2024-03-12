@@ -13,6 +13,38 @@ const DotSimulator = () => {
     setShowParameters(!showParameters);
   };
 
+  const drawBoidAsArrow = (ctx, boid, scalingFactor, offsetX, offsetY) => {
+    const headLength = 9; // Length from base to tip of the arrowhead
+    const headWidth = 6; // Width of the arrowhead base
+  
+    // Calculate the angle of the boid's velocity
+    const angle = Math.atan2(boid.vy, boid.vx);
+
+    // Calculate the starting point of the arrow (boid's position)
+    const baseX = offsetX + boid.x * scalingFactor;
+    const baseY = offsetY + boid.y * scalingFactor;
+
+    // Calculate the tip of the arrowhead by extending from the base in the direction of the velocity
+    const tipX = baseX + Math.cos(angle) * headLength;
+    const tipY = baseY + Math.sin(angle) * headLength;
+
+    // Calculate the two base points of the arrowhead, which create the width
+    const baseLeftX = baseX + Math.cos(angle - Math.PI / 2) * (headWidth / 2);
+    const baseLeftY = baseY + Math.sin(angle - Math.PI / 2) * (headWidth / 2);
+    
+    const baseRightX = baseX + Math.cos(angle + Math.PI / 2) * (headWidth / 2);
+    const baseRightY = baseY + Math.sin(angle + Math.PI / 2) * (headWidth / 2);
+
+    // Draw the arrowhead
+    ctx.beginPath();
+    ctx.moveTo(tipX, tipY); // Start at the tip
+    ctx.lineTo(baseLeftX, baseLeftY); // Draw to one base point
+    ctx.lineTo(baseRightX, baseRightY); // Draw to the other base point
+    ctx.closePath(); // Close the path to form a triangle
+    ctx.fillStyle = 'green';
+    ctx.fill();
+  };
+
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = Stomp.over(socket);
@@ -31,13 +63,10 @@ const DotSimulator = () => {
           // Clear the canvas
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-          // Draw each boid
-          // ctx.globalAlpha = 0.4;
-          boids.forEach((position) => {
-            ctx.beginPath();
-            ctx.arc(offsetX + position.x * scalingFactor, offsetY + position.y * scalingFactor, boidSize, 0, 2 * Math.PI);
-            ctx.fillStyle = 'black';
-            ctx.fill();
+          ctx.globalAlpha = 0.8;
+          // Draw each boid as an arrow
+          boids.forEach((boid) => {
+            drawBoidAsArrow(ctx, boid, scalingFactor, offsetX, offsetY);
           });
 
           // Draw average position
