@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*
 class FlockingParametersController(
     val flockSimulator: FlockSimulator
 ) {
-
-    @CrossOrigin(origins = ["http://127.0.0.1:5173/"]) // Adjust as necessary
+    @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
     @PostMapping("/update")
     fun updateFlockingParameters(@RequestBody parameters: FlockingParametersDTO): String {
         // Logic to update your simulation parameters here
@@ -25,7 +24,7 @@ class FlockingParametersController(
         return "Parameters updated successfully"
     }
 
-    @CrossOrigin(origins = ["http://127.0.0.1:5173/"]) // Adjust as necessary
+    @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
     @PostMapping("/reset")
     fun resetSimulation(): String {
         // Logic to update your simulation parameters here
@@ -33,6 +32,4 @@ class FlockingParametersController(
         flockSimulator.reset()
         return "Reset done"
     }
-
-
 }

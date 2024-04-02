@@ -57,18 +57,24 @@ class Boid(var position: Vector, var velocity: Vector) {
         centerForce.multiply(0.000001)
 
         // Add the force vectors to acceleration
-        acceleration.add(sep).add(ali).add(coh).add(flockCenterForce).add(centerForce)
+        acceleration
+            .add(sep)
+            .add(ali)
+            .add(coh)
+            .add(flockCenterForce)
+            .add(centerForce)
 
         // acceleration.limit(MAX_FORCE)
         velocity.add(acceleration)
         velocity.limit(MAX_SPEED)
-        position.add(velocity)
 
         // add a bit randomness
-        // position.add (Vector(Math.random() * 0.1, Math.random() * 0.1))
+        velocity.add(Vector(Math.random() * 0.01, Math.random() * 0.01))
+
+        position.add(velocity)
 
         // position.wrap() // Ensure the position wraps around the boundary
-        acceleration.multiply(0.7) // Optionally reset acceleration after each update
+        acceleration.multiply(0.0) // Optionally reset acceleration after each update
 
         // position = position.add(acceleration)
     }

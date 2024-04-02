@@ -18,21 +18,21 @@ const DotSimulator = () => {
     const normalizedSpeed = (speed - minSpeed) / (maxSpeed - minSpeed);
     
     // Ensure the value is between 0 and 1
-    const clampedSpeed = Math.max(0, Math.min(1, normalizedSpeed));
+    const clampedSpeed = Math.max(0.5, Math.min(0.8, normalizedSpeed));
     
     // Interpolate between green (slow) and red (fast)
-    const r = clampedSpeed * 255;
-    const g = (1 - clampedSpeed) * 255;
-    const b = 50;
+    const r = (1 - clampedSpeed) * 255;
+    const g = (1 - clampedSpeed) * 255; // (1 - clampedSpeed) * 255;
+    const b = (1 - clampedSpeed) * 255; // 50;
     
     return `rgb(${Math.round(r)}, ${Math.round(g)}, ${b})`;
   };
 
   const drawBoidAsArrow = (ctx, boid, scalingFactor, offsetX, offsetY) => {
-    const headLength = 9; // Length from base to tip of the arrowhead
-    const headWidth = 6; // Width of the arrowhead base
+    const headLength = 12; // Length from base to tip of the arrowhead
+    const headWidth = 9; // Width of the arrowhead base
 
-    const minSpeed = 1.0
+    const minSpeed = 1.5
     const maxSpeed = 2.0
   
     // Calculate the angle of the boid's velocity
@@ -87,20 +87,27 @@ const DotSimulator = () => {
           const scalingFactor = 1.8;
           const offsetX = 850;
           const offsetY = 500;
-          const boidSize = 2.1
+          const boidSize = 2.5
 
-          ctx.globalAlpha = 0.8;
+          ctx.globalAlpha = 0.6;
           // Draw each boid as an arrow
+          // boids.forEach((boid) => {
+          //   drawBoidAsArrow(ctx, boid, scalingFactor, offsetX, offsetY);
+          // });
+          // or as a dot
           boids.forEach((boid) => {
-            drawBoidAsArrow(ctx, boid, scalingFactor, offsetX, offsetY);
+            ctx.beginPath();
+            ctx.arc(offsetX + boid.x * scalingFactor, offsetY + boid.y * scalingFactor, boidSize, 0, 2 * Math.PI);
+            ctx.fillStyle = 'black';
+            ctx.fill();
           });
 
           // Draw average position
-          ctx.globalAlpha = 1.0;
-          ctx.beginPath();
-          ctx.arc(offsetX + averagePosition.x * scalingFactor, offsetY + averagePosition.y * scalingFactor, boidSize, 0, 2 * Math.PI);
-          ctx.fillStyle = 'red';
-          ctx.fill();
+          // ctx.globalAlpha = 1.0;
+          // ctx.beginPath();
+          // ctx.arc(offsetX + averagePosition.x * scalingFactor, offsetY + averagePosition.y * scalingFactor, boidSize, 0, 2 * Math.PI);
+          // ctx.fillStyle = 'red';
+          // ctx.fill();
         }
       });
     });

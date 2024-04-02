@@ -8,8 +8,11 @@ class SpatialGrid(private val cellSize: Double, private val width: Double, priva
     private fun index(x: Int, y: Int): Int = x + y * cols
 
     fun addBoid(boid: Boid) {
-        val col = (boid.position.x / cellSize).toInt().coerceIn(0, cols - 1)
-        val row = (boid.position.y / cellSize).toInt().coerceIn(0, rows - 1)
+        val offsetX = width / 2  // Offset to transform the position
+        val offsetY = height / 2
+
+        val col = ((boid.position.x + offsetX) / cellSize).toInt().coerceIn(0, cols - 1)
+        val row = ((boid.position.y + offsetY) / cellSize).toInt().coerceIn(0, rows - 1)
         grid[index(col, row)].add(boid)
     }
 
@@ -21,8 +24,12 @@ class SpatialGrid(private val cellSize: Double, private val width: Double, priva
 
     fun getNeighbors(boid: Boid): List<Boid> {
         val neighbors = mutableListOf<Boid>()
-        val col = (boid.position.x / cellSize).toInt().coerceIn(0, cols - 1)
-        val row = (boid.position.y / cellSize).toInt().coerceIn(0, rows - 1)
+
+        val offsetX = width / 2  // Offset to transform the position
+        val offsetY = height / 2
+
+        val col = ((boid.position.x + offsetX) / cellSize).toInt().coerceIn(0, cols - 1)
+        val row = ((boid.position.y + offsetY) / cellSize).toInt().coerceIn(0, rows - 1)
 
         for (i in -1..1) {
             for (j in -1..1) {
