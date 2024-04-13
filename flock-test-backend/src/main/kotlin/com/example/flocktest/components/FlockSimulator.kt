@@ -16,10 +16,10 @@ import kotlin.system.measureTimeMillis
 @Component
 @EnableScheduling
 class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemplate) {
-    private val amount = 2000
+    private val amount = 1000
     private val flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector(0.0,0.0)) }
 
-    var cohRange: Double = 5.0 // 10 * Math.random()
+    var cohRange: Double = 5.5 // 10 * Math.random()
     var aliRange: Double = 8.0 // 10 * Math.random()
     var sepRange: Double = 3.0 // 10 * Math.random()
 
@@ -29,7 +29,7 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
 
     private val spatialGrid = SpatialGrid(cellSize = 50.0, width = 600.0, height = 600.0)
 
-    @Scheduled(fixedRate = 25)
+    @Scheduled(fixedRate = 50)
     fun broadcastFlockPositions() {
         spatialGrid.clear()
         flock.forEach { spatialGrid.addBoid(it) }

@@ -69,12 +69,12 @@ class Boid(var position: Vector, var velocity: Vector) {
         velocity.limit(MAX_SPEED)
 
         // add a bit randomness
-        velocity.add(Vector(Math.random() * 0.01, Math.random() * 0.01))
+        velocity.add(Vector(Math.random() * 0.001, Math.random() * 0.001))
 
         position.add(velocity)
 
         // position.wrap() // Ensure the position wraps around the boundary
-        acceleration.multiply(0.0) // Optionally reset acceleration after each update
+        acceleration.multiply(0.7) // Optionally reset acceleration after each update
 
         // position = position.add(acceleration)
     }

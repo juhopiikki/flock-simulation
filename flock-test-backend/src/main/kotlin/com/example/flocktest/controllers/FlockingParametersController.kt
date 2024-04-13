@@ -12,7 +12,6 @@ class FlockingParametersController(
     @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
     @PostMapping("/update")
     fun updateFlockingParameters(@RequestBody parameters: FlockingParametersDTO): String {
-        // Logic to update your simulation parameters here
         println("Received parameters: $parameters")
         flockSimulator.aliScale = parameters.alignmentScale
         flockSimulator.cohScale = parameters.cohesionScale
@@ -27,9 +26,21 @@ class FlockingParametersController(
     @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
     @PostMapping("/reset")
     fun resetSimulation(): String {
-        // Logic to update your simulation parameters here
         println("Resetting")
         flockSimulator.reset()
         return "Reset done"
+    }
+
+    @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
+    @GetMapping("/current")
+    fun getCurrentParameters(): FlockingParametersDTO {
+        return FlockingParametersDTO(
+            alignmentScale = flockSimulator.aliScale,
+            cohesionScale = flockSimulator.cohScale,
+            separationScale = flockSimulator.sepScale,
+            alignmentRange = flockSimulator.aliRange,
+            cohesionRange = flockSimulator.cohRange,
+            separationRange = flockSimulator.sepRange
+        )
     }
 }

@@ -54,7 +54,7 @@ const DotSimulator = () => {
     const baseRightY = baseY + Math.sin(angle + Math.PI / 2) * (headWidth / 2);
 
     // Determine the color based on speed
-    const color = calculateColorBasedOnSpeed(boid.vx, boid.vy, minSpeed, maxSpeed);
+    const color = `rgb(50, 50, 50)` //  calculateColorBasedOnSpeed(boid.vx, boid.vy, minSpeed, maxSpeed);
 
     // Draw the arrowhead
     ctx.beginPath();
@@ -89,18 +89,18 @@ const DotSimulator = () => {
           const offsetY = 500;
           const boidSize = 2.5
 
-          ctx.globalAlpha = 0.6;
+          ctx.globalAlpha = 1.0;
           // Draw each boid as an arrow
-          // boids.forEach((boid) => {
-          //   drawBoidAsArrow(ctx, boid, scalingFactor, offsetX, offsetY);
-          // });
-          // or as a dot
           boids.forEach((boid) => {
-            ctx.beginPath();
-            ctx.arc(offsetX + boid.x * scalingFactor, offsetY + boid.y * scalingFactor, boidSize, 0, 2 * Math.PI);
-            ctx.fillStyle = 'black';
-            ctx.fill();
+            drawBoidAsArrow(ctx, boid, scalingFactor, offsetX, offsetY);
           });
+          // or as a dot
+          // boids.forEach((boid) => {
+          //   ctx.beginPath();
+          //   ctx.arc(offsetX + boid.x * scalingFactor, offsetY + boid.y * scalingFactor, boidSize, 0, 2 * Math.PI);
+          //   ctx.fillStyle = 'black';
+          //   ctx.fill();
+          // });
 
           // Draw average position
           // ctx.globalAlpha = 1.0;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SliderInput from './SliderInput';
 
@@ -12,12 +12,20 @@ const FlockingParametersForm = () => {
         separationScale: 2.5,
     });
 
-    const handleInputChange = (e) => {
-        setParameters({
-            ...parameters,
-            [e.target.name]: parseFloat(e.target.value),
-        });
-    };
+    // Fetch parameters when component mounts
+    useEffect(() => {
+        const fetchParameters = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/parameters/current');
+                setParameters(response.data);
+            } catch (error) {
+                console.error('Error fetching parameters:', error);
+                alert('Failed to fetch parameters');
+            }
+        };
+
+        fetchParameters();
+    }, []); // Empty dependency array ensures this runs only once on mount
 
     const handleSubmit = async (e) => {
         e.preventDefault();
