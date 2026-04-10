@@ -10,8 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import kotlin.math.roundToInt
-import kotlin.math.roundToLong
-import kotlin.system.measureTimeMillis
 
 @Component
 @EnableScheduling

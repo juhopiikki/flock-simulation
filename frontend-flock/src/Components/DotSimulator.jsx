@@ -69,9 +69,9 @@ const DotSimulator = () => {
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = Stomp.over(socket);
+    stompClient.debug = null;
 
     stompClient.connect({}, () => {
-      console.log('Connected to the WebSocket server');
       stompClient.subscribe('/topic/position', (message) => {
         const { boids, averagePosition } = JSON.parse(message.body);
         if (canvasRef.current) {
