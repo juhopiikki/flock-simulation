@@ -25,9 +25,10 @@ class FlockingParametersController(
 
     @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
     @PostMapping("/reset")
-    fun resetSimulation(): String {
-        println("Resetting")
-        flockSimulator.reset()
+    fun resetSimulation(@RequestBody(required = false) body: Map<String, Int>?): String {
+        val amount = body?.get("amount")
+        println("Resetting with amount: $amount")
+        if (amount != null) flockSimulator.reset(amount) else flockSimulator.reset()
         return "Reset done"
     }
 

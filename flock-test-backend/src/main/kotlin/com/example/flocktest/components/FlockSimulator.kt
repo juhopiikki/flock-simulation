@@ -16,8 +16,8 @@ import kotlin.system.measureTimeMillis
 @Component
 @EnableScheduling
 class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemplate) {
-    private val amount = 1000
-    private val flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector(0.0,0.0)) }
+    private var amount = 2000
+    private var flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector(0.0,0.0)) }
 
     var cohRange: Double = 5.5 // 10 * Math.random()
     var aliRange: Double = 8.0 // 10 * Math.random()
@@ -73,7 +73,8 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
         }
     }
 
-    fun reset() {
-        flock.forEach { it.position = Vector.random() }
+    fun reset(newAmount: Int = amount) {
+        amount = newAmount
+        flock = List(amount) { Boid(Vector.random(), Vector(0.0, 0.0)) }
     }
 }

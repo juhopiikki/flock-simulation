@@ -11,6 +11,7 @@ const FlockingParametersForm = () => {
         alignmentScale: 1.0,
         separationScale: 2.5,
     });
+    const [boidCount, setBoidCount] = useState(2000);
 
     // Fetch parameters when component mounts
     useEffect(() => {
@@ -45,8 +46,7 @@ const FlockingParametersForm = () => {
     const handleResetSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/api/parameters/reset');
-            //alert(response.data);
+            await axios.post('http://localhost:8080/api/parameters/reset', { amount: boidCount });
         } catch (error) {
             console.error("Error resetting:", error);
             alert('Failed to reset');
@@ -94,6 +94,15 @@ const FlockingParametersForm = () => {
                 />
             </form>
             <form onSubmit={handleResetSubmit}>
+                <SliderInput
+                    label="Boid Count"
+                    name="boidCount"
+                    value={boidCount}
+                    onChange={(e) => setBoidCount(parseInt(e.target.value))}
+                    min="100"
+                    max="6000"
+                    step="100"
+                />
                 <button type="submit">Reset</button>
             </form>
         </>
