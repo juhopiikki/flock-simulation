@@ -24,12 +24,18 @@ class FlockingParametersController(
     }
 
     @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
-    @PostMapping("/reset")
-    fun resetSimulation(@RequestBody(required = false) body: Map<String, Int>?): String {
+    @PostMapping("/reset-positions")
+    fun resetPositions(@RequestBody(required = false) body: Map<String, Int>?): String {
         val amount = body?.get("amount")
-        println("Resetting with amount: $amount")
-        if (amount != null) flockSimulator.reset(amount) else flockSimulator.reset()
-        return "Reset done"
+        if (amount != null) flockSimulator.resetPositions(amount) else flockSimulator.resetPositions()
+        return "Positions reset"
+    }
+
+    @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
+    @PostMapping("/reset-parameters")
+    fun resetParameters(): FlockingParametersDTO {
+        flockSimulator.resetParameters()
+        return getCurrentParameters()
     }
 
     @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])

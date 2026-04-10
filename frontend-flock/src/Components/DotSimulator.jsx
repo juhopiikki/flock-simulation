@@ -148,7 +148,7 @@ const DotSimulator = () => {
           borderRadius: '8px',
           padding: '12px 16px',
           zIndex: 2,
-          minWidth: '180px',
+          minWidth: '300px',
         }}>
           <FlockingParametersForm />
         </div>

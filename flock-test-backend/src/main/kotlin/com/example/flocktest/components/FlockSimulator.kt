@@ -68,8 +68,17 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
         }
     }
 
-    fun reset(newAmount: Int = amount) {
+    fun resetPositions(newAmount: Int = amount) {
         amount = newAmount
         flock = List(amount) { Boid(Vector.random(), Vector(0.0, 0.0)) }
+    }
+
+    fun resetParameters() {
+        cohRange = 5.5
+        aliRange = 7.2
+        sepRange = 7.1
+        cohScale = 0.5
+        aliScale = 1.3
+        sepScale = 2.8
     }
 }

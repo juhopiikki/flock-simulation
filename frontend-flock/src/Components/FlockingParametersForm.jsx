@@ -44,12 +44,22 @@ const FlockingParametersForm = () => {
         }
     };
 
-    const handleResetSubmit = async (e) => {
+    const handleResetPositions = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/api/parameters/reset', { amount: boidCount });
+            await axios.post('http://localhost:8080/api/parameters/reset-positions', { amount: boidCount });
         } catch (error) {
-            console.error("Error resetting:", error);
+            console.error("Error resetting positions:", error);
+            setBackendStatus('offline');
+        }
+    };
+
+    const handleResetParameters = async () => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/parameters/reset-parameters');
+            setParameters(response.data);
+        } catch (error) {
+            console.error("Error resetting parameters:", error);
             setBackendStatus('offline');
         }
     };
@@ -117,7 +127,7 @@ const FlockingParametersForm = () => {
                     onChange={handleSubmit}
                 />
             </form>
-            <form onSubmit={handleResetSubmit}>
+            <form onSubmit={handleResetPositions}>
                 <SliderInput
                     label="Boid Count"
                     name="boidCount"
@@ -127,8 +137,11 @@ const FlockingParametersForm = () => {
                     max="6000"
                     step="100"
                 />
-                <button type="submit">Reset</button>
-                <button type="button" onClick={handleRandomize} style={{ marginLeft: '8px' }}>Randomize</button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <button type="submit">Reset positions</button>
+                    <button type="button" onClick={handleResetParameters}>Reset parameters</button>
+                    <button type="button" onClick={handleRandomize}>Randomize</button>
+                </div>
             </form>
         </>
     );
