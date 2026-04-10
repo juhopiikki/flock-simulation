@@ -12,6 +12,7 @@ const FlockingParametersForm = () => {
         separationScale: 2.5,
     });
     const [boidCount, setBoidCount] = useState(2000);
+    const [backendStatus, setBackendStatus] = useState('connecting');
 
     // Fetch parameters when component mounts
     useEffect(() => {
@@ -19,14 +20,15 @@ const FlockingParametersForm = () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/parameters/current');
                 setParameters(response.data);
+                setBackendStatus('connected');
             } catch (error) {
                 console.error('Error fetching parameters:', error);
-                alert('Failed to fetch parameters');
+                setBackendStatus('offline');
             }
         };
 
         fetchParameters();
-    }, []); // Empty dependency array ensures this runs only once on mount
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,11 +37,10 @@ const FlockingParametersForm = () => {
             [e.target.name]: parseFloat(e.target.value),
         });
         try {
-            const response = await axios.post('http://localhost:8080/api/parameters/update', parameters);
-            //alert(response.data);
+            await axios.post('http://localhost:8080/api/parameters/update', parameters);
         } catch (error) {
             console.error("Error updating parameters:", error);
-            alert('Failed to update parameters');
+            setBackendStatus('offline');
         }
     };
 
@@ -49,12 +50,25 @@ const FlockingParametersForm = () => {
             await axios.post('http://localhost:8080/api/parameters/reset', { amount: boidCount });
         } catch (error) {
             console.error("Error resetting:", error);
-            alert('Failed to reset');
+            setBackendStatus('offline');
         }
     };
 
+    const statusStyle = {
+        fontSize: '0.8em',
+        marginBottom: '8px',
+        color: backendStatus === 'connected' ? 'green' : backendStatus === 'offline' ? 'red' : 'gray',
+    };
+
+    const statusText = {
+        connected: null,
+        offline: 'Backend offline — start the server',
+        connecting: 'Connecting to backend...',
+    }[backendStatus];
+
     return (
         <>
+            <div style={statusStyle}>{statusText}</div>
             <form onSubmit={handleSubmit}>
                 <SliderInput
                     label="Cohesion Range"
