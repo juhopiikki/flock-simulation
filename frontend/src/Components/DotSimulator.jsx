@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
 import FlockingParametersForm from './FlockingParametersForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
@@ -67,61 +67,31 @@ const DotSimulator = () => {
   };
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/ws');
-    const stompClient = Stomp.over(socket);
-    stompClient.debug = null;
-
-    stompClient.connect({}, () => {
-      stompClient.subscribe('/topic/position', (message) => {
-        const { boids, averagePosition } = JSON.parse(message.body);
-        if (canvasRef.current) {
-          const canvas = canvasRef.current;
-          const ctx = canvas.getContext('2d');
-
-          // Set the background to black
-          // ctx.fillStyle = 'black';
-          // ctx.fillRect(0, 0, canvas.width, canvas.height);
-          // Clear the canvas
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-          const scalingFactor = 1.8;
-          const offsetX = 850;
-          const offsetY = 500;
-          const boidSize = 2.5
-
-          ctx.globalAlpha = 1.0;
-          // Draw each boid as an arrow
-          boids.forEach((boid) => {
-            drawBoidAsArrow(ctx, boid, scalingFactor, offsetX, offsetY);
-          });
-          // or as a dot
-          // boids.forEach((boid) => {
-          //   ctx.beginPath();
-          //   ctx.arc(offsetX + boid.x * scalingFactor, offsetY + boid.y * scalingFactor, boidSize, 0, 2 * Math.PI);
-          //   ctx.fillStyle = 'black';
-          //   ctx.fill();
-          // });
-
-          // Draw average position
-          // ctx.globalAlpha = 1.0;
-          // ctx.beginPath();
-          // ctx.arc(offsetX + averagePosition.x * scalingFactor, offsetY + averagePosition.y * scalingFactor, boidSize, 0, 2 * Math.PI);
-          // ctx.fillStyle = 'red';
-          // ctx.fill();
-        }
-      });
+    const client = new Client({
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      debug: () => {},
+      onConnect: () => {
+        client.subscribe('/topic/position', (message) => {
+          const { boids } = JSON.parse(message.body);
+          if (canvasRef.current) {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const scalingFactor = 1.8;
+            const offsetX = 850;
+            const offsetY = 500;
+            boids.forEach((boid) => {
+              drawBoidAsArrow(ctx, boid, scalingFactor, offsetX, offsetY);
+            });
+          }
+        });
+      },
     });
 
-    // Cleanup function
-    /*return () => {
-      if (stompClient) {
-        stompClient.disconnect(() => {
-          console.log('Disconnected from the WebSocket server');
-        });
-      }
-    };
-*/
-  }, []); // The empty dependency array ensures this effect runs only once on mount
+    client.activate();
+
+    return () => client.deactivate();
+  }, []);
 
   return (
     <div style={{ position: 'relative' }}>

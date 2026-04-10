@@ -11,7 +11,7 @@ Run with `npm run dev`
 
 Spring Boot with Kotlin
 
-Kotlin coroutines used for optimising the simulation. Simulation runs fine with 3000 boids 20 FPS on a laptop. The algorithm complexity increases exponentially with the amount of boids.
+Kotlin coroutines used for optimising the simulation. Simulation runs fine with 3000 boids ~35 FPS on a laptop. The algorithm complexity increases exponentially with the amount of boids.
 
 Rquires Java 23
 
