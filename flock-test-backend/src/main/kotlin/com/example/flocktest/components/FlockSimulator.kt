@@ -19,17 +19,17 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
     private var amount = 2000
     private var flock: List<Boid> = List(amount) { Boid(Vector.random(), Vector(0.0,0.0)) }
 
-    var cohRange: Double = 5.5 // 10 * Math.random()
-    var aliRange: Double = 8.0 // 10 * Math.random()
-    var sepRange: Double = 3.0 // 10 * Math.random()
+    var cohRange: Double = 5.5
+    var aliRange: Double = 7.2
+    var sepRange: Double = 7.1
 
-    var cohScale: Double = 1.0 // 10 * Math.random()
-    var aliScale: Double = 1.0 // 10 * Math.random()
-    var sepScale: Double = 2.5 // 10 * Math.random()
+    var cohScale: Double = 0.5
+    var aliScale: Double = 1.3
+    var sepScale: Double = 2.8
 
     private val spatialGrid = SpatialGrid(cellSize = 50.0, width = 600.0, height = 600.0)
 
-    @Scheduled(fixedRate = 50)
+    @Scheduled(fixedRate = 30)
     fun broadcastFlockPositions() {
         spatialGrid.clear()
         flock.forEach { spatialGrid.addBoid(it) }
@@ -38,12 +38,9 @@ class FlockSimulator(@Autowired private val messagingTemplate: SimpMessagingTemp
             acc.add(boid.position)
         }.divide(flock.size.toDouble())
 
-        val executionTime = measureTimeMillis {
-            runBlocking {
-                calculateUpdatesAsync(boids = flock, avgPosition)
-            }
+        runBlocking {
+            calculateUpdatesAsync(boids = flock, avgPosition)
         }
-        println("Calculation took $executionTime ms")
 
         val avgPosition2 = flock.fold(Vector(0.0, 0.0)) { acc, boid ->
             acc.add(boid.position)

@@ -13,7 +13,7 @@ Spring Boot with Kotlin
 
 Kotlin coroutines used for optimising the simulation. Simulation runs fine with 3000 boids 20 FPS on a laptop. The algorithm complexity increases exponentially with the amount of boids.
 
-Rquires Java 17
+Rquires Java 23
 
 Run with `./gradlew bootRun`
 

@@ -44,4 +44,18 @@ class FlockingParametersController(
             separationRange = flockSimulator.sepRange
         )
     }
+
+    @CrossOrigin(origins = ["http://localhost:5173/", "http://127.0.0.1:5173/"])
+    @PostMapping("/randomize")
+    fun randomizeParameters(): FlockingParametersDTO {
+        fun rand(min: Double, max: Double) = Math.round((min + Math.random() * (max - min)) * 10) / 10.0
+        flockSimulator.aliScale = rand(0.5, 4.0)
+        flockSimulator.cohScale = rand(0.5, 4.0)
+        flockSimulator.sepScale = rand(0.5, 4.0)
+        flockSimulator.aliRange = rand(2.0, 10.0)
+        flockSimulator.cohRange = rand(2.0, 10.0)
+        flockSimulator.sepRange = rand(2.0, 10.0)
+        println("Randomized parameters")
+        return getCurrentParameters()
+    }
 }

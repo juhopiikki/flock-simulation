@@ -4,12 +4,12 @@ import SliderInput from './SliderInput';
 
 const FlockingParametersForm = () => {
     const [parameters, setParameters] = useState({
-        cohesionRange: 8.0,
-        alignmentRange: 6.0,
-        separationRange: 3.0,
-        cohesionScale: 1.0,
-        alignmentScale: 1.0,
-        separationScale: 2.5,
+        cohesionRange: 5.5,
+        alignmentRange: 7.2,
+        separationRange: 7.1,
+        cohesionScale: 0.5,
+        alignmentScale: 1.3,
+        separationScale: 2.8,
     });
     const [boidCount, setBoidCount] = useState(2000);
     const [backendStatus, setBackendStatus] = useState('connecting');
@@ -50,6 +50,16 @@ const FlockingParametersForm = () => {
             await axios.post('http://localhost:8080/api/parameters/reset', { amount: boidCount });
         } catch (error) {
             console.error("Error resetting:", error);
+            setBackendStatus('offline');
+        }
+    };
+
+    const handleRandomize = async () => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/parameters/randomize');
+            setParameters(response.data);
+        } catch (error) {
+            console.error("Error randomizing:", error);
             setBackendStatus('offline');
         }
     };
@@ -118,6 +128,7 @@ const FlockingParametersForm = () => {
                     step="100"
                 />
                 <button type="submit">Reset</button>
+                <button type="button" onClick={handleRandomize} style={{ marginLeft: '8px' }}>Randomize</button>
             </form>
         </>
     );

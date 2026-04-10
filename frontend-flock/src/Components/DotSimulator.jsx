@@ -54,7 +54,7 @@ const DotSimulator = () => {
     const baseRightY = baseY + Math.sin(angle + Math.PI / 2) * (headWidth / 2);
 
     // Determine the color based on speed
-    const color = `rgb(50, 50, 50)` //  calculateColorBasedOnSpeed(boid.vx, boid.vy, minSpeed, maxSpeed);
+    const color = `rgb(40, 80, 160)` //  calculateColorBasedOnSpeed(boid.vx, boid.vy, minSpeed, maxSpeed);
 
     // Draw the arrowhead
     ctx.beginPath();
@@ -125,24 +125,30 @@ const DotSimulator = () => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <canvas 
+      <canvas
         ref={canvasRef}
         width="1700"
         height="1000"
-        style={{ 
+        style={{
           width: '100%',
-          height: 'auto' 
+          height: 'auto',
+          display: 'block',
+          backgroundColor: '#ffffff',
         }}>
       </canvas>
 
       {showParameters && (
         <div style={{
           position: 'absolute',
-          top: 60,
+          top: 50,
           left: 10,
-          backgroundColor: 'rgba(245, 245, 245, 0.5)',
-          padding: '10px',
-          zIndex: 2, // Ensure the form appears above the canvas
+          backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(4px)',
+          border: '1px solid rgba(0,0,0,0.1)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          zIndex: 2,
+          minWidth: '180px',
         }}>
           <FlockingParametersForm />
         </div>
@@ -152,7 +158,12 @@ const DotSimulator = () => {
         position: 'absolute',
         top: '10px',
         left: '10px',
-        zIndex: 3, // Ensure the button is always clickable and visible
+        zIndex: 3,
+        background: 'rgba(255,255,255,0.85)',
+        border: '1px solid rgba(0,0,0,0.1)',
+        borderRadius: '6px',
+        padding: '6px 10px',
+        cursor: 'pointer',
       }}>
         <FontAwesomeIcon icon={faCog} />
       </button>
